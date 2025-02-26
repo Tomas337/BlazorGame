@@ -1,6 +1,10 @@
 using BlazorGame.Components;
+using BlazorGame.Data;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddDbContext<AppDbContext>();
+builder.Services.AddServerSideBlazor();
 
 // Add services to the container.
 builder.Services.AddRazorComponents()

@@ -7,7 +7,7 @@ public class AppDbContext : DbContext
     public DbSet<User> Users { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder options)
-        => options.UseSqlite("Data Source=/home/tomas337/Blazor-Snake-DB/snakedb.sqlite");
+        => options.UseSqlite("Data Source=/home/tomas337/BlazorGameDB/blazorgamedb.sqlite");
 }
 
 public class User
