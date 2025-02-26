@@ -1,0 +1,43 @@
+@* @using BlazorSnake.Data *@
+@* @inject AppDbContext Db *@
+
+@if (_loggedIn)
+{
+    <span>Logged in as @_credential.Username</span>
+    <EditForm class="form" Model="@_credential" OnSubmit="@Logout">
+        <button type="submit" id="logout" name="logout" class="btn btn-primary">Log out</button>
+    </EditForm>
+}
+else
+{
+    <div class="bounding-box">
+        <EditForm class="form" Model="@_credential" OnSubmit="@Login">
+            <InputText class="form-control" id="user-name" aria-describedby="emailHelp" placeholder="Username" @bind-Value=@_credential.Username />
+            <InputText type="password" class="form-control" id="password" placeholder="Password" @bind-Value=@_credential.Password />
+            <button type="submit" id="login" name="login" class="btn btn-primary">Login</button>
+        </EditForm>
+    </div>
+}
+
+@code {
+
+    public class Credential
+    {
+        public string Username { get; set; } = "";
+        public string Password { get; set; } = "";
+    }
+
+    private Credential _credential = new Credential();
+    private bool _loggedIn = false;
+
+    private async Task Login()
+    {
+
+    }
+
+    private async Task Logout()
+    {
+
+    }
+
+}
