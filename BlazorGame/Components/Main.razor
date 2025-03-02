@@ -1,16 +1,25 @@
 @page "/"
 @using BlazorGame.Components.Controls
 @using BlazorGame.Components.Game
-@using BlazorGame.Components.UserLogin
+@using BlazorGame.Components.Login
 @using BlazorGame.Components.Leaderboard
+@using Microsoft.AspNetCore.Components.Authorization
+@using BlazorGame.Components.Logout
 
 <PageTitle>Blazor Snake</PageTitle>
 
 <div class="page">
-    <Controls></Controls>
-    <Game></Game>
+    <Controls />
+    <Game />
     <div class="side-bar">
-        <UserLogin></UserLogin>
-        <Leaderboard></Leaderboard>
+        <AuthorizeView>
+            <NotAuthorized>
+                <Login />
+            </NotAuthorized>
+            <Authorized>
+                <Logout />
+            </Authorized>
+        </AuthorizeView>
+        <Leaderboard />
     </div>
 </div>

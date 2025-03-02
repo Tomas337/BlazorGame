@@ -1,0 +1,28 @@
+@inject NavigationManager navigationManager
+@inject IHttpContextAccessor HttpContextAccessor
+@rendermode InteractiveServer
+
+<div class="bounding-box">
+    <div class="mb-3 text-center">
+        <span>Logged in as @username</span>
+    </div>
+    <div class="mb-3 d-grid gap-2">
+        <button class="btn btn-primary" @onclick="GoToLogout">Log out</button>
+    </div>
+</div>
+
+@code {
+    private string? username;
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        var httpContext = HttpContextAccessor.HttpContext;
+        username = httpContext?.User.Identity?.Name;
+    }
+
+    private void GoToLogout()
+    {
+        navigationManager.NavigateTo("/logout");
+    }
+}
