@@ -1,14 +1,12 @@
 @page "/register"
+@using BlazorGame.Data
+@using BlazorGame.Models.Entities
 @using BlazorGame.Models.ViewModels
+@inject AppDbContext appDbContext
 
 <div class="w-25 h-100 mx-auto d-flex justify-content-center align-items-center">
     <EditForm class="form" Model="@Model" OnValidSubmit="@Register" FormName="RegisterForm">
         <DataAnnotationsValidator />
-        <div class="mb-3">
-            <label>E-mail</label>
-            <InputText type="email" class="form-control" placeholder="name@domain.com" @bind-Value=@Model.Email/>
-            <ValidationMessage For="() => Model.Email"/>
-        </div>
         <div class="mb-3">
             <label>User name</label>
             <InputText class="form-control" placeholder="Username" @bind-Value=@Model.Username/>
@@ -39,6 +37,14 @@
 
     private async Task Register()
     {
+        var userAccount = appDbContext.Users.FirstOrDefault(x => x.Username == Model.Username);
+        if (userAccount is not null)
+        {
+            errorMessage = "User name already exists";
+            return;
+        }
+
+        appDbContext.Users.Add(new User(Model.Username, Model.Password));
 
     }
 

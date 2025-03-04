@@ -13,6 +13,7 @@
       <_ContentIncludedByDefault Remove="Components\Pages\Error.razor" />
       <_ContentIncludedByDefault Remove="Components\Pages\Home.razor" />
       <_ContentIncludedByDefault Remove="Components\Pages\Weather.razor" />
+      <_ContentIncludedByDefault Remove="Components\Login\Login.razor" />
     </ItemGroup>
 
     <ItemGroup>
@@ -26,6 +27,13 @@
       </PackageReference>
       <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="8.0.13" />
       <PackageReference Include="System.Security.Claims" Version="4.3.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <AdditionalFiles Include="Components\UserAuth\Login\Login.razor" />
+      <AdditionalFiles Include="Components\UserAuth\Logout\Logout.razor" />
+      <AdditionalFiles Include="Components\UserAuth\Logout\LogoutPage.razor" />
+      <AdditionalFiles Include="Components\UserAuth\Register\RegisterPage.razor" />
     </ItemGroup>
 
 </Project>
