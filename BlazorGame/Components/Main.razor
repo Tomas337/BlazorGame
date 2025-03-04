@@ -15,6 +15,9 @@
         <AuthorizeView>
             <NotAuthorized>
                 <Login />
+                <div class="mb-3">
+                    <span>Don't have an account? <a href="/register">Register</a></span>
+                </div>
             </NotAuthorized>
             <Authorized>
                 <Logout />
