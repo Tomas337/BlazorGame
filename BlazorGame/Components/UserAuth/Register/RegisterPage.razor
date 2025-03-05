@@ -1,8 +1,13 @@
 @page "/register"
+@using System.Security.Claims
 @using BlazorGame.Data
 @using BlazorGame.Models.Entities
 @using BlazorGame.Models.ViewModels
+@using Microsoft.AspNetCore.Authentication
+@using Microsoft.AspNetCore.Authentication.Cookies
+@inject IHttpContextAccessor HttpContextAccessor
 @inject AppDbContext appDbContext
+@inject NavigationManager navigationManager
 
 <div class="w-25 h-100 mx-auto d-flex justify-content-center align-items-center">
     <EditForm class="form" Model="@Model" OnValidSubmit="@Register" FormName="RegisterForm">
@@ -45,7 +50,27 @@
         }
 
         appDbContext.Users.Add(new User(Model.Username, Model.Password));
+        appDbContext.SaveChanges();
 
+        var claims = new List<Claim>
+        {
+            new(ClaimTypes.Name, Model.Username),
+        };
+
+        var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+        var principal = new ClaimsPrincipal(identity);
+        var httpContext = HttpContextAccessor.HttpContext;
+        if (httpContext is not null)
+        {
+            await httpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
+        }
+        else
+        {
+            errorMessage = "Authentication failed. HttpContext is unavailable.";
+            return;
+        }
+
+        navigationManager.NavigateTo("/");
     }
 
 }
