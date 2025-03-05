@@ -12,17 +12,21 @@
     <Controls />
     <Game />
     <div class="side-bar">
-        <AuthorizeView>
-            <NotAuthorized>
-                <Login />
-                <div class="mb-3">
-                    <span>Don't have an account? <a href="/register">Register</a></span>
-                </div>
-            </NotAuthorized>
-            <Authorized>
-                <Logout />
-            </Authorized>
-        </AuthorizeView>
-        <Leaderboard />
+        <div class="h-auto w-100">
+            <AuthorizeView>
+                <NotAuthorized>
+                    <Login/>
+                    <div class="mb-3">
+                        <span>Don't have an account? <a href="/register">Register</a></span>
+                    </div>
+                </NotAuthorized>
+                <Authorized>
+                    <Logout/>
+                </Authorized>
+            </AuthorizeView>
+        </div>
+        <div class="h-75 w-100">
+            <Leaderboard/>
+        </div>
     </div>
 </div>
