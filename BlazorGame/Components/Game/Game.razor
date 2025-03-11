@@ -39,7 +39,7 @@
 @code {
     protected override async Task OnInitializedAsync()
     {
-        await StartGame();
+        // await StartGame();
     }
 
     const int NoOfRows = 15;
@@ -207,7 +207,7 @@
 
     bool IsSnakeHead(int row, int col)
     {
-        return row == SnakeBody[0].Row && col == SnakeBody[0].Col;
+        return row == SnakeBody.FirstOrDefault()?.Row && col == SnakeBody.FirstOrDefault()?.Col;
     }
 
     bool IsFoodFound()
