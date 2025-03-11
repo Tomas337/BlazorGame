@@ -8,30 +8,33 @@
          @onkeydown="ControlSnakeDirection">
         @for (int row = 0; row < NoOfRows; row++)
         {
-            @for (int col = 0; col < NoOfCols; col++)
-            {
-                bool isSnakeCell = IsSnakeCell(row, col);
-                bool isSnakeHead = IsSnakeHead(row, col);
-                bool isFoodCell = IsFoodCell(row, col);
+            <div class="row">
+                @for (int col = 0; col < NoOfCols; col++)
+                {
+                    bool isSnakeCell = IsSnakeCell(row, col);
+                    bool isSnakeHead = IsSnakeHead(row, col);
+                    bool isFoodCell = IsFoodCell(row, col);
 
-                <div class="cell @(isSnakeCell && !isSnakeHead ? "snake-body" : "")">
-                    @if (isSnakeCell)
-                    {
-                        @if (isSnakeHead)
+                    <div class="cell @(isSnakeCell && !isSnakeHead ? "snake-body" : "")">
+                        @if (isSnakeCell)
                         {
-                            <span>🐲</span>
+                            @if (isSnakeHead)
+                            {
+                                <span>🐲</span>
+                            }
+                            else
+                            {
+                                <span>●</span>
+                            }
                         }
-                        else
+                        @if (isFoodCell)
                         {
-                            <span>●</span>
+                            <span>🍎</span>
                         }
-                    }
-                    @if (isFoodCell)
-                    {
-                        <span>🍎</span>
-                    }
-                </div>
-            }
+
+                    </div>
+                }
+            </div>
         }
     </div>
 </div>

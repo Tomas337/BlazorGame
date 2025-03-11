@@ -1,5 +1,5 @@
 div.bounding-box {
-    width: 72vh;
+    width: 72vmin;
     height: 80%;
     display: flex;
     flex-direction: column;
@@ -10,7 +10,7 @@ div.bounding-box {
 div.score-bar {
     display: flex;
     height: 10%;
-    width: 72vh;
+    width: 72vmin;
     justify-content: space-between;
     align-items: center;
 }
@@ -22,8 +22,28 @@ span.best-score {
 }
 
 div.snake-container {
-    /*width: 100%;*/
-    height: 72vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 72vmin;
+    width: 72vmin;
     aspect-ratio: 1 / 1;
     border: 1px solid black;
+}
+
+div.row {
+    height: auto;
+    width: 100%;
+    display: flex;
+    flex-wrap: nowrap;
+}
+
+div.cell {
+    flex: 1 1 0;
+    aspect-ratio: 1 / 1;
+    padding: 0;
+}
+
+div.snake-body {
+    color: green;
 }
