@@ -1,3 +1,5 @@
+@rendermode InteractiveServer
+
 <div class="bounding-box">
     <div class="score-bar">
         <span class="score">Score: @_score</span>
@@ -6,6 +8,15 @@
     <div class="snake-container"
          tabindex="0"
          @onkeydown="ControlSnakeDirection">
+
+        @if (_isGameOver)
+        {
+            <div class="overlay-box" @onclick="StartGame">
+                Play
+                @* <span>Play</span> *@
+            </div>
+        }
+
         @for (int row = 0; row < NoOfRows; row++)
         {
             <div class="row">
@@ -40,11 +51,6 @@
 </div>
 
 @code {
-    protected override async Task OnInitializedAsync()
-    {
-        // await StartGame();
-    }
-
     const int NoOfRows = 15;
     const int NoOfCols = 15;
     const int Speed = 600;
@@ -52,15 +58,15 @@
     int _score = 0;
     int _bestScore = 0;
 
-    bool _isGameOver;
+    bool _isGameOver = true;
 
     SnakeCell _currentCell = null!;
     static readonly List<SnakeCell> SnakeBody = [];
 
     Direction _snakeDirection = Direction.Right;
 
-    int _foodRow = 5;
-    int _foodCol = 5;
+    int _foodRow = -1;
+    int _foodCol = -1;
 
     enum Direction
     {
@@ -79,16 +85,14 @@
 
     void InitializeGame()
     {
-        // Define the Snake's initial position
+        _isGameOver = false;
+
         _currentCell = new SnakeCell { Row = 10, Col = 10 };
 
-        // Initialize the snake's size to 1
+        SnakeBody.Clear();
         _score = 1;
-
-        // Initialize the snake's body with one cell at the starting position
         SnakeBody.Add(CloneSnakeCell());
 
-        // Generate the initial food
         GenerateFood();
     }
 
@@ -160,30 +164,11 @@
         if (_currentCell.Row < 0 || _currentCell.Row >= NoOfRows || _currentCell.Col < 0 || _currentCell.Col >= NoOfCols)
         {
             _isGameOver = true;
-            // bool isResetGame = await js.InvokeAsync<bool>("ResetGamePopup", _score);
-            // if (isResetGame)
-            // {
-            //     if (_score > _bestScore)
-            //     {
-            //         _bestScore = _score;
-            //     }
-            //
-            //     ResetGame();
-            // }
-            // else
-            // {
-            //     await js.InvokeVoidAsync("navigateToWebsite", $"https://rikampalkar.github.io/");
-            // }
+            if (_score > _bestScore)
+            {
+                _bestScore = _score;
+            }
         }
-
-        _isGameOver = false;
-    }
-
-    void ResetGame()
-    {
-        SnakeBody.Clear();
-        _isGameOver = false;
-        _ = OnInitializedAsync();
     }
 
     void GenerateFood()
