@@ -1,5 +1,6 @@
 using BlazorGame.Components;
 using BlazorGame.Data;
+using BlazorGame.Utils;
 using Microsoft.AspNetCore.Authentication.Cookies;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -17,6 +18,7 @@ builder.Services.AddAuthorization();
 builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddDbContext<AppDbContext>();
 builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<ICookie, Cookie>();
 
 var app = builder.Build();
 
