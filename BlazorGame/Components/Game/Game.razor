@@ -60,7 +60,7 @@
         public bool IsGameOver = true;
 
         private SnakeCell _currentCell = null!;
-        private static readonly List<SnakeCell> SnakeBody = [];
+        private readonly List<SnakeCell> _snakeBody = [];
 
         private Direction _snakeDirection = Direction.Right;
 
@@ -88,9 +88,9 @@
 
             _currentCell = new SnakeCell { Row = 10, Col = 10 };
 
-            SnakeBody.Clear();
+            _snakeBody.Clear();
             Score = 1;
-            SnakeBody.Add(CloneSnakeCell());
+            _snakeBody.Add(CloneSnakeCell());
 
             GenerateFood();
         }
@@ -146,12 +146,12 @@
             }
 
             // Add the new current Cell to the  of the snake's body
-            SnakeBody.Insert(0, CloneSnakeCell());
+            _snakeBody.Insert(0, CloneSnakeCell());
 
             // Remove the last cell (tail) to maintain the snake's size
-            if (SnakeBody.Count > Score)
+            if (_snakeBody.Count > Score)
             {
-                SnakeBody.RemoveAt(SnakeBody.Count - 1);
+                _snakeBody.RemoveAt(_snakeBody.Count - 1);
             }
 
             //Check if Game is over
@@ -168,9 +168,9 @@
 
         private bool CheckTailBitten()
         {
-            for (int i = 1; i < SnakeBody.Count; i++)
+            for (int i = 1; i < _snakeBody.Count; i++)
             {
-                SnakeCell cell = SnakeBody[i];
+                SnakeCell cell = _snakeBody[i];
 
                 if (_currentCell.Row == cell.Row && _currentCell.Col == cell.Col)
                 {
@@ -211,7 +211,7 @@
 
         private bool IsSnakeCell(int row, int col)
         {
-            return SnakeBody.Exists(cell => cell.Row == row && cell.Col == col);
+            return _snakeBody.Exists(cell => cell.Row == row && cell.Col == col);
         }
 
         private bool IsFoodCell(int row, int col)
@@ -221,7 +221,7 @@
 
         private bool IsSnakeHead(int row, int col)
         {
-            return row == SnakeBody.FirstOrDefault()?.Row && col == SnakeBody.FirstOrDefault()?.Col;
+            return row == _snakeBody.FirstOrDefault()?.Row && col == _snakeBody.FirstOrDefault()?.Col;
         }
 
         public string GetCellClass(int row, int col)
