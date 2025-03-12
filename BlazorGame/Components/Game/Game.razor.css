@@ -49,7 +49,7 @@ div.cell {
 }
 
 div.snake-body {
-    color: green;
+    background-color: green;
 }
 
 div.overlay-box {
