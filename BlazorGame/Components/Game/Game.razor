@@ -2,26 +2,26 @@
 
 <div class="bounding-box">
     <div class="score-bar">
-        <span class="score">Score: @_score</span>
-        <span class="best-score">Best score: @_bestScore</span>
+        <span class="score">Score: @_snake.Score</span>
+        <span class="best-score">Best score: @_snake.BestScore</span>
     </div>
     <div class="snake-container"
          tabindex="0"
-         @onkeydown="ControlSnakeDirection">
+         @onkeydown="_snake.ControlSnakeDirection">
 
-        @if (_isGameOver)
+        @if (_snake.IsGameOver)
         {
             <div class="overlay-box" @onclick="StartGame">
                 Play
             </div>
         }
 
-        @for (int row = 0; row < NoOfRows; row++)
+        @for (int row = 0; row < Snake.NoOfRows; row++)
         {
             <div class="row">
-                @for (int col = 0; col < NoOfCols; col++)
+                @for (int col = 0; col < Snake.NoOfCols; col++)
                 {
-                    <div class="cell @(GetCellClass(row, col))"></div>
+                    <div class="cell @(_snake.GetCellClass(row, col))"></div>
                 }
             </div>
         }
@@ -29,163 +29,169 @@
 </div>
 
 @code {
-    const int NoOfRows = 15;
-    const int NoOfCols = 15;
-    const int Speed = 300;
+    private Snake _snake = new();
 
-    int _score = 0;
-    int _bestScore = 0;
+    private async Task StartGame() => await _snake.StartGame(StateHasChanged);
 
-    bool _isGameOver = true;
-
-    SnakeCell _currentCell = null!;
-    static readonly List<SnakeCell> SnakeBody = [];
-
-    Direction _snakeDirection = Direction.Right;
-
-    int _foodRow = -1;
-    int _foodCol = -1;
-
-    enum Direction
+    private class Snake
     {
-        Up = 0,
-        Right = 1,
-        Down = 2,
-        Left = 3
-    }
+        public const int NoOfRows = 15;
+        public const int NoOfCols = 15;
+        const int Speed = 300;
 
-    class SnakeCell
-    {
-        public int Row { get; set; }
+        public int Score = 0;
+        public int BestScore = 0;
+        public bool IsGameOver = true;
 
-        public int Col { get; set; }
-    }
+        private SnakeCell _currentCell = null!;
+        private static readonly List<SnakeCell> SnakeBody = [];
 
-    void InitializeGame()
-    {
-        _isGameOver = false;
+        private Direction _snakeDirection = Direction.Right;
 
-        _currentCell = new SnakeCell { Row = 10, Col = 10 };
+        private int _foodRow = -1;
+        private int _foodCol = -1;
 
-        SnakeBody.Clear();
-        _score = 1;
-        SnakeBody.Add(CloneSnakeCell());
-
-        GenerateFood();
-    }
-
-    async Task StartGame()
-    {
-        // Reset game state
-        InitializeGame();
-
-        // Start the game loop
-        while (!_isGameOver)
+        private enum Direction
         {
-            UpdateSnakeDirection();
-            if (IsFoodFound())
+            Up = 0,
+            Right = 1,
+            Down = 2,
+            Left = 3
+        }
+
+        public class SnakeCell
+        {
+            public int Row { get; set; }
+
+            public int Col { get; set; }
+        }
+
+        private void InitializeGame()
+        {
+            IsGameOver = false;
+
+            _currentCell = new SnakeCell { Row = 10, Col = 10 };
+
+            SnakeBody.Clear();
+            Score = 1;
+            SnakeBody.Add(CloneSnakeCell());
+
+            GenerateFood();
+        }
+
+        public async Task StartGame(Action stateHasChanged)
+        {
+            // Reset game state
+            InitializeGame();
+
+            // Start the game loop
+            while (!IsGameOver)
             {
-                _score++;
-                GenerateFood();
-            }
+                UpdateSnakeDirection();
+                if (IsFoodFound())
+                {
+                    Score++;
+                    GenerateFood();
+                }
 
-            await Task.Delay(Speed);
-            StateHasChanged();
-        }
-    }
-
-    void ControlSnakeDirection(KeyboardEventArgs e)
-    {
-        _snakeDirection = e.Key switch
-        {
-            "ArrowUp" => Direction.Up,
-            "ArrowRight" => Direction.Right,
-            "ArrowDown" => Direction.Down,
-            "ArrowLeft" => Direction.Left,
-            _ => _snakeDirection
-        };
-    }
-
-    void UpdateSnakeDirection()
-    {
-        switch (_snakeDirection)
-        {
-            case Direction.Up:
-                _currentCell.Row--;
-                break;
-            case Direction.Right:
-                _currentCell.Col++;
-                break;
-            case Direction.Down:
-                _currentCell.Row++;
-                break;
-            case Direction.Left:
-                _currentCell.Col--;
-                break;
-        }
-
-        // Add the new current Cell to the  of the snake's body
-        SnakeBody.Insert(0, CloneSnakeCell());
-
-        //Check if Game is over
-        IsGameOver();
-
-        // Remove the last cell (tail) to maintain the snake's size
-        if (SnakeBody.Count > _score)
-        {
-            SnakeBody.RemoveAt(SnakeBody.Count - 1);
-        }
-    }
-
-    void IsGameOver()
-    {
-        if (_currentCell.Row < 0 || _currentCell.Row >= NoOfRows || _currentCell.Col < 0 || _currentCell.Col >= NoOfCols)
-        {
-            _isGameOver = true;
-            if (_score > _bestScore)
-            {
-                _bestScore = _score;
+                await Task.Delay(Speed);
+                stateHasChanged();
             }
         }
-    }
 
-    void GenerateFood()
-    {
-        var random = new Random();
-        _foodRow = random.Next(0, NoOfRows);
-        _foodCol = random.Next(0, NoOfCols);
-    }
+        public void ControlSnakeDirection(KeyboardEventArgs e)
+        {
+            _snakeDirection = e.Key switch
+            {
+                "ArrowUp" => Direction.Up,
+                "ArrowRight" => Direction.Right,
+                "ArrowDown" => Direction.Down,
+                "ArrowLeft" => Direction.Left,
+                _ => _snakeDirection
+            };
+        }
 
-    SnakeCell CloneSnakeCell()
-    {
-        return new SnakeCell { Row = _currentCell.Row, Col = _currentCell.Col };
-    }
+        private void UpdateSnakeDirection()
+        {
+            switch (_snakeDirection)
+            {
+                case Direction.Up:
+                    _currentCell.Row--;
+                    break;
+                case Direction.Right:
+                    _currentCell.Col++;
+                    break;
+                case Direction.Down:
+                    _currentCell.Row++;
+                    break;
+                case Direction.Left:
+                    _currentCell.Col--;
+                    break;
+            }
 
-    bool IsFoodFound()
-    {
-        return _currentCell.Row == _foodRow && _currentCell.Col == _foodCol;
-    }
+            // Add the new current Cell to the  of the snake's body
+            SnakeBody.Insert(0, CloneSnakeCell());
 
-    bool IsSnakeCell(int row, int col)
-    {
-        return SnakeBody.Exists(cell => cell.Row == row && cell.Col == col);
-    }
+            //Check if Game is over
+            CheckIfGameOver();
 
-    bool IsFoodCell(int row, int col)
-    {
-        return row == _foodRow && col == _foodCol;
-    }
+            // Remove the last cell (tail) to maintain the snake's size
+            if (SnakeBody.Count > Score)
+            {
+                SnakeBody.RemoveAt(SnakeBody.Count - 1);
+            }
+        }
 
-    bool IsSnakeHead(int row, int col)
-    {
-        return row == SnakeBody.FirstOrDefault()?.Row && col == SnakeBody.FirstOrDefault()?.Col;
-    }
+        private void CheckIfGameOver()
+        {
+            if (_currentCell.Row < 0 || _currentCell.Row >= NoOfRows || _currentCell.Col < 0 || _currentCell.Col >= NoOfCols)
+            {
+                IsGameOver = true;
+                if (Score > BestScore)
+                {
+                    BestScore = Score;
+                }
+            }
+        }
 
-    string GetCellClass(int row, int col)
-    {
-        if (IsFoodCell(row, col)) return "food";
-        if (IsSnakeHead(row, col)) return "snake-head";
-        if (IsSnakeCell(row, col)) return "snake-body";
-        return "";
+        private void GenerateFood()
+        {
+            var random = new Random();
+            _foodRow = random.Next(0, NoOfRows);
+            _foodCol = random.Next(0, NoOfCols);
+        }
+
+        private SnakeCell CloneSnakeCell()
+        {
+            return new SnakeCell { Row = _currentCell.Row, Col = _currentCell.Col };
+        }
+
+        private bool IsFoodFound()
+        {
+            return _currentCell.Row == _foodRow && _currentCell.Col == _foodCol;
+        }
+
+        private bool IsSnakeCell(int row, int col)
+        {
+            return SnakeBody.Exists(cell => cell.Row == row && cell.Col == col);
+        }
+
+        private bool IsFoodCell(int row, int col)
+        {
+            return row == _foodRow && col == _foodCol;
+        }
+
+        private bool IsSnakeHead(int row, int col)
+        {
+            return row == SnakeBody.FirstOrDefault()?.Row && col == SnakeBody.FirstOrDefault()?.Col;
+        }
+
+        public string GetCellClass(int row, int col)
+        {
+            if (IsFoodCell(row, col)) return "food";
+            if (IsSnakeHead(row, col)) return "snake-head";
+            if (IsSnakeCell(row, col)) return "snake-body";
+            return "";
+        }
     }
 }
