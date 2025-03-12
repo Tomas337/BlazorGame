@@ -1,4 +1,6 @@
+@using BlazorGame.Utils
 @rendermode InteractiveServer
+@inject ICookie Cookie
 
 <div class="bounding-box">
     <div class="score-bar">
@@ -31,7 +33,21 @@
 @code {
     private Snake _snake = new();
 
-    private async Task StartGame() => await _snake.StartGame(StateHasChanged);
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await base.OnAfterRenderAsync(firstRender);
+        if (firstRender)
+        {
+            int.TryParse(await Cookie.GetValue("BestScore"), out _snake.BestScore);
+            StateHasChanged();
+        }
+    }
+
+    private async Task StartGame()
+    {
+        await _snake.StartGame(StateHasChanged);
+        await Cookie.SetValue("BestScore", $"{_snake.BestScore}");
+    }
 
     private class Snake
     {
