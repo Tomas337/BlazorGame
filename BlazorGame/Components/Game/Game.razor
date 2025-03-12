@@ -132,19 +132,41 @@
             // Add the new current Cell to the  of the snake's body
             SnakeBody.Insert(0, CloneSnakeCell());
 
-            //Check if Game is over
-            CheckIfGameOver();
-
             // Remove the last cell (tail) to maintain the snake's size
             if (SnakeBody.Count > Score)
             {
                 SnakeBody.RemoveAt(SnakeBody.Count - 1);
             }
+
+            //Check if Game is over
+            CheckIfGameOver();
+        }
+
+        private bool CheckOutOfBounds()
+        {
+            return _currentCell.Row < 0 ||
+                   _currentCell.Row >= NoOfRows ||
+                   _currentCell.Col < 0 ||
+                   _currentCell.Col >= NoOfCols;
+        }
+
+        private bool CheckTailBitten()
+        {
+            for (int i = 1; i < SnakeBody.Count; i++)
+            {
+                SnakeCell cell = SnakeBody[i];
+
+                if (_currentCell.Row == cell.Row && _currentCell.Col == cell.Col)
+                {
+                    return true;
+                }
+            }
+            return false;
         }
 
         private void CheckIfGameOver()
         {
-            if (_currentCell.Row < 0 || _currentCell.Row >= NoOfRows || _currentCell.Col < 0 || _currentCell.Col >= NoOfCols)
+            if (CheckOutOfBounds() || CheckTailBitten())
             {
                 IsGameOver = true;
                 if (Score > BestScore)
