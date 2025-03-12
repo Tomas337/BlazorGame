@@ -52,6 +52,14 @@ div.snake-body {
     background-color: green;
 }
 
+div.snake-head {
+    background-color: darkgreen;
+}
+
+div.food {
+    background-color: red;
+}
+
 div.overlay-box {
     position: absolute;
     top: 50%;
