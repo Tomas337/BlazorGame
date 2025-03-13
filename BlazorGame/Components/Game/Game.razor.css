@@ -73,5 +73,6 @@ div.overlay-box {
     z-index: 1;
     border: 1px solid black;
     user-select: none;
+    cursor: pointer;
     background-color: gray;
 }
