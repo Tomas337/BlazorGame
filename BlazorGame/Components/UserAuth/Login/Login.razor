@@ -4,10 +4,10 @@
 @using Microsoft.AspNetCore.Authentication
 @using Microsoft.AspNetCore.Authentication.Cookies
 @using Microsoft.AspNetCore.Components.Authorization
-@inject AppDbContext appDbContext
+@inject AppDbContext AppDbContext
 @inject IHttpContextAccessor HttpContextAccessor
 @inject AuthenticationStateProvider AuthenticationStateProvider
-@inject NavigationManager navigationManager
+@inject NavigationManager NavigationManager
 
 <div class="bounding-box">
     <EditForm class="form" Model="@Model" OnValidSubmit="@Authenticate" FormName="LoginForm">
@@ -39,7 +39,7 @@
 
     private async Task Authenticate()
     {
-        var userAccount = appDbContext.Users.FirstOrDefault(x => x.Username == Model.Username);
+        var userAccount = AppDbContext.Users.SingleOrDefault(x => x.Username == Model.Username);
         if (userAccount is null || userAccount.Password != Model.Password)
         {
             errorMessage = "Invalid user name or password";
@@ -64,6 +64,6 @@
             return;
         }
 
-        navigationManager.NavigateTo("/");
+        NavigationManager.NavigateTo("/");
     }
 }

@@ -1,6 +1,6 @@
 @page "/logout"
 @using Microsoft.AspNetCore.Authentication
-@inject NavigationManager navigationManager
+@inject NavigationManager NavigationManager
 
 <div class="bounding-box">
     <div class="mb-3 text-center">
@@ -19,6 +19,7 @@
         {
             await HttpContext.SignOutAsync();
         }
-        navigationManager.NavigateTo("/", true);
+        HttpContext.Response.Cookies.Delete("BestScore");
+        NavigationManager.NavigateTo("/", true);
     }
 }

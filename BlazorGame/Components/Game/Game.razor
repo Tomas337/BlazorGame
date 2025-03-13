@@ -1,6 +1,10 @@
+@using BlazorGame.Data
+@using BlazorGame.Models.Entities
 @using BlazorGame.Utils
+@using Microsoft.AspNetCore.Components.Authorization
 @rendermode InteractiveServer
 @inject ICookie Cookie
+@inject AppDbContext AppDbContext
 
 <div class="bounding-box">
     <div class="score-bar">
@@ -33,12 +37,52 @@
 @code {
     private Snake _snake = new();
 
+    [CascadingParameter]
+    private Task<AuthenticationState> AuthenticationStateTask {get; set;}
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        var authState = await AuthenticationStateTask;
+        var user = authState.User;
+        if (user.Identity?.IsAuthenticated == true)
+        {
+            User dbUser = AppDbContext.Users.SingleOrDefault(x => x.Username == user.Identity.Name)!;
+            int userBestScore = dbUser.BestScore;
+            if (userBestScore > _snake.BestScore) _snake.BestScore = userBestScore;
+            if (userBestScore < _snake.BestScore)
+            {
+                dbUser.BestScore = _snake.BestScore;
+                await AppDbContext.SaveChangesAsync();
+            }
+        }
+    }
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         await base.OnAfterRenderAsync(firstRender);
         if (firstRender)
         {
             int.TryParse(await Cookie.GetValue("BestScore"), out _snake.BestScore);
+
+            var authState = await AuthenticationStateTask;
+            var user = authState.User;
+
+            if (user.Identity?.IsAuthenticated == true)
+            {
+                User dbUser = AppDbContext.Users.SingleOrDefault(x => x.Username == user.Identity.Name)!;
+                int userBestScore = dbUser.BestScore;
+                if (userBestScore > _snake.BestScore)
+                {
+                    _snake.BestScore = userBestScore;
+                    await Cookie.SetValue("BestScore", $"{userBestScore}");
+                }
+                if (userBestScore < _snake.BestScore)
+                {
+                    dbUser.BestScore = _snake.BestScore;
+                    await AppDbContext.SaveChangesAsync();
+                }
+            }
             StateHasChanged();
         }
     }
