@@ -20,6 +20,6 @@
             await HttpContext.SignOutAsync();
         }
         HttpContext.Response.Cookies.Delete("BestScore");
-        NavigationManager.NavigateTo("/", true);
+        NavigationManager.NavigateTo("/");
     }
 }

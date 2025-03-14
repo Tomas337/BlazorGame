@@ -36,6 +36,7 @@
 </div>
 
 @code {
+
     private Snake _snake = new();
 
     [CascadingParameter]
@@ -64,10 +65,6 @@
                     dbUser.BestScore = _snake.BestScore;
                     await AppDbContext.SaveChangesAsync();
                 }
-            }
-            else
-            {
-                _snake.BestScore = 0;
             }
             StateHasChanged();
         }
