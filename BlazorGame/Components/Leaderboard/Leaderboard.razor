@@ -1,7 +1,57 @@
+@using BlazorGame.Data
+@inject AppDbContext AppDbContext
+
 <div class="bounding-box">
-    <h3>Leaderboard</h3>
+    <h3 class="leaderboard-title">Leaderboard</h3>
+    <ol>
+        @foreach (var user in _scores)
+        {
+            <li>@user.Username @user.Score</li>
+        }
+    </ol>
 </div>
 
 @code {
 
+    private class User(string username, int score)
+    {
+        public string Username = username;
+        public int Score = score;
+    }
+
+    private Timer? _timer;
+    const int NumberOfElements = 10;
+    private List<User> _scores = null!;
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        _scores = AppDbContext.Users
+            .OrderByDescending(user => user.BestScore)
+            .Take(NumberOfElements)
+            .Select(user => new User(user.Username, user.BestScore))
+            .ToList();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            const int delay = 5000;
+            const int interval = 5000;
+
+            var timerCallBack = new TimerCallback(async void (_) =>
+            {
+                _scores = AppDbContext.Users
+                    .OrderByDescending(user => user.BestScore)
+                    .Take(NumberOfElements)
+                    .Select(user => new User(user.Username, user.BestScore))
+                    .ToList();
+                StateHasChanged();
+                // await InvokeAsync(StateHasChanged);
+            });
+            _timer = new Timer(timerCallBack, null, delay, interval);
+        }
+        await base.OnAfterRenderAsync(firstRender);
+    }
 }
