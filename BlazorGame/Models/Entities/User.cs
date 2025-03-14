@@ -1,5 +1,8 @@
+using Microsoft.EntityFrameworkCore;
+
 namespace BlazorGame.Models.Entities;
 
+[Index(nameof(Username))]
 public class User(string username, string password)
 {
     public int Id { get; set; }
