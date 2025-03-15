@@ -5,9 +5,10 @@
 @using BlazorGame.Models.ViewModels
 @using Microsoft.AspNetCore.Authentication
 @using Microsoft.AspNetCore.Authentication.Cookies
+@using Microsoft.EntityFrameworkCore
 @inject IHttpContextAccessor HttpContextAccessor
-@inject AppDbContext appDbContext
-@inject NavigationManager navigationManager
+@inject IDbContextFactory<AppDbContext> DbFactory
+@inject NavigationManager NavigationManager
 
 <div class="w-25 h-100 mx-auto d-flex justify-content-center align-items-center">
     <EditForm class="form" Model="@Model" OnValidSubmit="@Register" FormName="RegisterForm">
@@ -23,7 +24,7 @@
             <ValidationMessage For="() => Model.Password"/>
         </div>
         <div class="mb-3 text-center">
-            <span class="text-danger">@errorMessage</span>
+            <span class="text-danger">@_errorMessage</span>
         </div>
         <div class="mb-2 d-grid gap-2">
             <button type="submit" class="btn btn-primary">Register</button>
@@ -38,19 +39,21 @@
     [SupplyParameterFromForm]
     public RegisterViewModel Model { get; set; } = new();
 
-    private string? errorMessage;
+    private string? _errorMessage;
 
     private async Task Register()
     {
+        var appDbContext = await DbFactory.CreateDbContextAsync();
+
         var userAccount = appDbContext.Users.FirstOrDefault(x => x.Username == Model.Username);
         if (userAccount is not null)
         {
-            errorMessage = "User name already exists";
+            _errorMessage = "User name already exists";
             return;
         }
 
         appDbContext.Users.Add(new User(Model.Username, Model.Password));
-        appDbContext.SaveChanges();
+        await appDbContext.SaveChangesAsync();
 
         var claims = new List<Claim>
         {
@@ -66,11 +69,10 @@
         }
         else
         {
-            errorMessage = "Authentication failed. HttpContext is unavailable.";
+            _errorMessage = "Authentication failed. HttpContext is unavailable.";
             return;
         }
 
-        navigationManager.NavigateTo("/");
+        NavigationManager.NavigateTo("/");
     }
-
 }

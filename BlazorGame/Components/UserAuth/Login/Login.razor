@@ -4,7 +4,8 @@
 @using Microsoft.AspNetCore.Authentication
 @using Microsoft.AspNetCore.Authentication.Cookies
 @using Microsoft.AspNetCore.Components.Authorization
-@inject AppDbContext AppDbContext
+@using Microsoft.EntityFrameworkCore
+@inject IDbContextFactory<AppDbContext> DbFactory
 @inject IHttpContextAccessor HttpContextAccessor
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject NavigationManager NavigationManager
@@ -23,7 +24,7 @@
             <ValidationMessage For="() => Model.Password"/>
         </div>
         <div class="mb-3 text-center">
-            <span class="text-danger">@errorMessage</span>
+            <span class="text-danger">@_errorMessage</span>
         </div>
         <div class="mb-2 d-grid gap-2">
             <button type="submit" class="btn btn-primary">Login</button>
@@ -35,14 +36,16 @@
     [SupplyParameterFromForm]
     public LoginViewModel Model { get; set; } = new();
 
-    private string? errorMessage;
+    private string? _errorMessage;
 
     private async Task Authenticate()
     {
-        var userAccount = AppDbContext.Users.SingleOrDefault(x => x.Username == Model.Username);
+        var appDbContext = await DbFactory.CreateDbContextAsync();
+
+        var userAccount = appDbContext.Users.SingleOrDefault(x => x.Username == Model.Username);
         if (userAccount is null || userAccount.Password != Model.Password)
         {
-            errorMessage = "Invalid user name or password";
+            _errorMessage = "Invalid user name or password";
             return;
         }
 
@@ -60,7 +63,7 @@
         }
         else
         {
-            errorMessage = "Authentication failed. HttpContext is unavailable.";
+            _errorMessage = "Authentication failed. HttpContext is unavailable.";
             return;
         }
 

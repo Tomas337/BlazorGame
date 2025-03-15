@@ -1,5 +1,6 @@
 @using BlazorGame.Data
-@inject AppDbContext AppDbContext
+@using Microsoft.EntityFrameworkCore
+@inject IDbContextFactory<AppDbContext> DbFactory
 
 <div class="bounding-box">
     <h3 class="leaderboard-title">Leaderboard</h3>
@@ -21,37 +22,26 @@
 
     private Timer? _timer;
     const int NumberOfElements = 10;
-    private List<User> _scores = null!;
+    private List<User> _scores = [];
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
-        base.OnInitialized();
-        _scores = AppDbContext.Users
+        _timer = new Timer(_ =>
+        {
+            Task.Run(async () => await UpdateLeaderboard());
+        }, null, 0, 60000);
+
+        await base.OnInitializedAsync();
+    }
+
+    private async Task UpdateLeaderboard()
+    {
+        var appDbContext = await DbFactory.CreateDbContextAsync();
+        _scores = await appDbContext.Users
             .OrderByDescending(user => user.BestScore)
             .Take(NumberOfElements)
             .Select(user => new User(user.Username, user.BestScore))
-            .ToList();
-    }
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
-        {
-            const int delay = 5000;
-            const int interval = 5000;
-
-            var timerCallBack = new TimerCallback(async void (_) =>
-            {
-                _scores = AppDbContext.Users
-                    .OrderByDescending(user => user.BestScore)
-                    .Take(NumberOfElements)
-                    .Select(user => new User(user.Username, user.BestScore))
-                    .ToList();
-                StateHasChanged();
-                // await InvokeAsync(StateHasChanged);
-            });
-            _timer = new Timer(timerCallBack, null, delay, interval);
-        }
-        await base.OnAfterRenderAsync(firstRender);
+            .ToListAsync();
+        await InvokeAsync(StateHasChanged);
     }
 }

@@ -2,6 +2,7 @@ using BlazorGame.Components;
 using BlazorGame.Data;
 using BlazorGame.Utils;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,7 +17,8 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
     });
 builder.Services.AddAuthorization();
 builder.Services.AddCascadingAuthenticationState();
-builder.Services.AddDbContext<AppDbContext>();
+builder.Services.AddDbContextFactory<AppDbContext>(opt =>
+    opt.UseSqlite("Data Source=/home/tomas337/RiderProjects/BlazorGame/BlazorGameDB/blazorgamedb.sqlite"));
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<ICookie, Cookie>();
 
