@@ -1,5 +1,29 @@
 div.bounding-box {
     width: 100%;
     height: 100%;
-    border: 1px solid black;
+}
+
+h3.leaderboard-title {
+    text-align: center;
+}
+
+table.leaderboard {
+    width: 100%;
+    height: 100%;
+}
+
+tr.header-row {
+
+}
+
+th.header-cell {
+
+}
+
+tr.leaderboard-row {
+
+}
+
+th.leaderboard-cell {
+
 }

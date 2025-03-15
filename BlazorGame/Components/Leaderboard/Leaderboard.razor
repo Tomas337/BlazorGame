@@ -5,12 +5,22 @@
 
 <div class="bounding-box">
     <h3 class="leaderboard-title">Leaderboard</h3>
-    <ol>
-        @foreach (var user in _scores)
+    <table class="leaderboard">
+        <tr class="header-row">
+            <th class="header-cell">#</th>
+            <th class="header-cell">Username</th>
+            <th class="header-cell">Score</th>
+        </tr>
+        @for (var i = 1; i <= _scores.Count; i++)
         {
-            <li>@user.Username @user.Score</li>
+            var user = _scores[i-1];
+            <tr class="leaderboard-row">
+                <td class="leaderboard-cell">@i</td>
+                <td class="leaderboard-cell">@user.Username</td>
+                <td class="leaderboard-cell">@user.Score</td>
+            </tr>
         }
-    </ol>
+    </table>
 </div>
 
 @code {
@@ -22,7 +32,8 @@
     }
 
     private Timer? _timer;
-    const int NumberOfElements = 10;
+    const int NumberOfElements = 25;
+    const int Period = 60000;
     private List<User> _scores = [];
 
     protected override void OnInitialized()
@@ -30,8 +41,7 @@
         _timer = new Timer(_ =>
         {
             Task.Run(UpdateLeaderboard);
-
-        }, null, 0, 60000);
+        }, null, 0, Period);
 
         base.OnInitialized();
     }
