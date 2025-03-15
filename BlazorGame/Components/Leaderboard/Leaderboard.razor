@@ -1,3 +1,4 @@
+@rendermode InteractiveServer
 @using BlazorGame.Data
 @using Microsoft.EntityFrameworkCore
 @inject IDbContextFactory<AppDbContext> DbFactory
@@ -24,14 +25,15 @@
     const int NumberOfElements = 10;
     private List<User> _scores = [];
 
-    protected override async Task OnInitializedAsync()
+    protected override void OnInitialized()
     {
         _timer = new Timer(_ =>
         {
-            Task.Run(async () => await UpdateLeaderboard());
+            Task.Run(UpdateLeaderboard);
+
         }, null, 0, 60000);
 
-        await base.OnInitializedAsync();
+        base.OnInitialized();
     }
 
     private async Task UpdateLeaderboard()
@@ -44,4 +46,5 @@
             .ToListAsync();
         await InvokeAsync(StateHasChanged);
     }
+
 }
