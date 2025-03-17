@@ -1,15 +1,21 @@
 div.bounding-box {
     width: 100%;
-    height: 100%;
-    overflow: hidden;
+    height: 50vmin;
+    /*height: 100%;*/
+    /*display: flex;*/
+    /*flex-direction: column;*/
+    /*justify-content: flex-end;*/
 }
 
 h3.leaderboard-title {
     text-align: center;
+    height: 10%;
 }
 
 table.leaderboard {
     width: 100%;
+    height: 90%;
+    table-layout: fixed;
 }
 
 tr.header-row {
@@ -26,4 +32,12 @@ tr.leaderboard-row {
 
 td.leaderboard-cell {
     text-align: center;
+}
+
+col.w-33 {
+    width: 33%;
+}
+
+col.w-66 {
+    width: 66%;
 }
